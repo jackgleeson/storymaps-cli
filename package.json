@@ -1,0 +1,27 @@
+{
+  "name": "storymaps",
+  "version": "0.0.1",
+  "description": "CLI tool for storymaps.io — import, export, validate, and manage user story maps from the terminal",
+  "bin": {
+    "storymaps": "./bin/storymaps.js"
+  },
+  "keywords": [
+    "story-mapping",
+    "user-story",
+    "agile",
+    "cli",
+    "yaml",
+    "backlog",
+    "product-management"
+  ],
+  "author": "Jack Gleeson",
+  "license": "AGPL-3.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jackgleeson/storymaps-cli"
+  },
+  "homepage": "https://storymaps.io",
+  "engines": {
+    "node": ">=18"
+  }
+}
