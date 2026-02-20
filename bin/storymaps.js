@@ -12,6 +12,7 @@ import { diffCommand } from '../lib/commands/diff.js';
 import { openCommand } from '../lib/commands/open.js';
 import { lockCommand } from '../lib/commands/lock.js';
 import { unlockCommand } from '../lib/commands/unlock.js';
+import { statusCommand } from '../lib/commands/status.js';
 
 const program = new Command();
 
@@ -88,6 +89,13 @@ program
     .option('-f, --file <path>', 'local file path', 'storymap.yml')
     .option('--remove', 'permanently remove the lock instead of session unlock')
     .action(unlockCommand);
+
+program
+    .command('status')
+    .description('Show a progress overview of the story map')
+    .argument('[file]', 'path to storymap file')
+    .option('-f, --file <path>', 'path to storymap file', 'storymap.yml')
+    .action(statusCommand);
 
 program.parseAsync().catch(err => {
     const message = err.name === 'ExitPromptError' ? 'Cancelled.'
