@@ -6,7 +6,7 @@ Thanks for your interest in contributing to Storymaps.io! We welcome bug reports
 
 **By submitting a pull request or other contribution to this repository, you agree to the following terms:**
 
-1. You grant the project maintainer and copyright holder a **perpetual, worldwide, non-exclusive, royalty-free, irrevocable licence** to use, reproduce, modify, sublicence, relicence, and distribute your contributions in any form and for any purpose, including in proprietary and commercial products.
+1. You grant the project maintainer and copyright holder a perpetual, worldwide, non-exclusive, royalty-free, irrevocable licence to use, reproduce, modify, sublicence, relicence, and distribute your contributions in any form and for any purpose, including in proprietary and commercial products.
 
 2. You confirm that you have the legal right to grant this licence, and that your contributions are your original work (or that you have the necessary rights to submit them).
 
