@@ -1,7 +1,7 @@
 {
   "name": "storymaps",
-  "version": "0.0.1",
-  "description": "CLI tool for storymaps.io — import, export, validate, and manage user story maps from the terminal",
+  "version": "1.0.0",
+  "description": "CLI tool for storymaps.io - import, export, validate, and manage user story maps from the terminal",
   "type": "module",
   "bin": {
     "storymaps": "./bin/storymaps.js"
