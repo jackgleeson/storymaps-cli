@@ -143,9 +143,23 @@ storymaps validate storymap.yml
 ### `convert`
 
 ```bash
-storymaps convert storymap.yml --to json 
+storymaps convert storymap.yml --to json
 storymaps convert storymap.json --to yaml --out storymap.yml
 ```
+
+### `import`
+
+Import tasks from an external project tracker into a storymap. Currently supports Phabricator.
+
+```bash
+storymaps import --from phabricator --tag my-project
+storymaps import --from phab --tag my-project --site localhost
+storymaps import --from phab --tag my-project --status open,in-progress
+```
+
+Epics (tasks tagged with `Epic` in Phabricator) become steps with their subtasks as cards. Standalone tasks are grouped into backlog columns. The map is registered on the server automatically.
+
+On first run you'll be prompted for your Phabricator instance URL and Conduit API token. Credentials are saved to `~/.storymaps/credentials.json`.
 
 ## YAML Format
 
