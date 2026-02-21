@@ -1,8 +1,11 @@
 #!/usr/bin/env node
 // Storymaps CLI — AGPL-3.0 — see LICENCE for details
 
+import { readFileSync } from 'node:fs';
 import chalk from 'chalk';
 import { Command } from 'commander';
+
+const pkg = JSON.parse(readFileSync(new URL('../package.json', import.meta.url), 'utf-8'));
 import { initCommand } from '../lib/commands/init.js';
 import { validateCommand } from '../lib/commands/validate.js';
 import { convertCommand } from '../lib/commands/convert.js';
@@ -20,7 +23,7 @@ const program = new Command();
 program
     .name('storymaps')
     .description('CLI companion for storymaps.io — manage user story maps from the terminal')
-    .version('0.0.1')
+    .version(pkg.version)
     .showHelpAfterError()
     .addHelpText('after', '\nRun storymaps <command> --help for details on a specific command.');
 
