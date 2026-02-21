@@ -54,6 +54,8 @@ storymaps push                        # upload to the server
 
 ## Status
 
+See the project status in a snapshot: 
+
 ```bash
 > storymaps status
 
