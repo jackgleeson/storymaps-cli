@@ -126,6 +126,11 @@ storymaps diff file1.yml file2.yml    # compare two local files
 
 ### `status`
 
+```bash
+storymaps status                      # progress overview of storymap.yml
+storymaps status other.yml            # progress overview of a specific file
+```
+
 Progress overview: slices, status counts, and blocked stories.
 
 ### `lock` / `unlock`
