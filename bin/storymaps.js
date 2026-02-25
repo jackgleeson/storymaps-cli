@@ -16,7 +16,7 @@ import { openCommand } from '../lib/commands/open.js';
 import { lockCommand } from '../lib/commands/lock.js';
 import { unlockCommand } from '../lib/commands/unlock.js';
 import { statusCommand } from '../lib/commands/status.js';
-import { importCommand } from '../lib/commands/import.js';
+
 
 const program = new Command();
 
@@ -101,15 +101,6 @@ program
     .option('-f, --file <path>', 'path to storymap file', 'storymap.yml')
     .action(statusCommand);
 
-program
-    .command('import')
-    .description('Import tasks from an external tool into a storymap')
-    .requiredOption('--from <source>', 'source platform (phabricator)')
-    .requiredOption('--tag <slug>', 'project tag/slug to import from')
-    .option('--status <statuses>', 'comma-separated statuses to import', 'open,in-progress,stalled,resolved')
-    .option('--output <path>', 'output file path', 'storymap.yml')
-    .option('-s, --site <site>', 'target site (e.g. localhost, storymaps.io)')
-    .action(importCommand);
 
 program.parseAsync().catch(err => {
     const message = err.name === 'ExitPromptError' ? 'Cancelled.'

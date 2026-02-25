@@ -1,8 +1,8 @@
 # Storymaps CLI
 
-The Storymaps CLI turns your storymaps.io map diagrams into YAML files you can version-control in git, diff in pull requests, and sync with the [storymaps.io](https://storymaps.io) server or your self-hosted instance all from your terminal. Built by developers for developers. 
+Turn your [storymaps.io](https://storymaps.io) diagrams into YAML files you can version-control, diff in pull requests, and sync with the server - all from your terminal.
 
-Story maps aren't just cards on a screen, they're structured data. The CLI lets you import the structure behind the diagram, edit it as code, and convert back and forth between your repo and the browser.
+Story maps are structured data. The CLI lets you export the structure behind the diagram, edit it as code, and push changes back to the browser.
 
 ```diff
 # What a story map change looks like in a pull request
@@ -36,7 +36,7 @@ npm link
 
 ```bash
 storymaps init                        # create a new storymap.yml
-storymaps open                        # view it in the browser
+storymaps open                        # open it in the browser
 ```
 
 Or pull an existing map:
@@ -45,11 +45,11 @@ Or pull an existing map:
 storymaps pull storymaps.io/abc123    # download as YAML
 ```
 
-Edit the YAML in your editor, then push it back:
+Edit the YAML, then push it back:
 
 ```bash
 storymaps diff                        # see what changed
-storymaps push                        # upload to the server
+storymaps push                        # sync to the server
 ```
 
 ## Status
@@ -79,7 +79,7 @@ Blocked
   ● Scan QR code
 ```
 
-Non-task cards (notes, questions) are excluded from stats counts based on the legend.
+Non-task cards (notes, questions) are excluded from counts based on the legend.
 
 ## Commands
 
@@ -95,7 +95,7 @@ Creates `storymap.yml` and registers it on the server. If you're offline, the fi
 ### `open`
 
 ```bash
-storymaps open                        # opens local storymap.yml in the web UI to work with
+storymaps open                        # open local storymap.yml in the browser
 storymaps open storymaps.io/abc123    # open a specific remote map
 ```
 
@@ -106,32 +106,32 @@ storymaps pull                        # uses id/site from storymap.yml
 storymaps pull storymaps.io/abc123    # pull a specific map
 ```
 
-Shows a change summary before overwriting.
+Shows a summary of changes before overwriting.
 
 ### `push`
 
 ```bash
-storymaps push                       # push local changes to the server
+storymaps push                        # push local changes to the server
 ```
 
-If the file has no `id`, a new map is created automatically. Conflicts are detected using ETags - if the remote changed since your last pull, you'll be prompted to pull first. Locked maps prompt for the password.
+If the file has no `id`, a new map is created on the server. Conflicts are detected using ETags. If the remote has changed since your last pull, you'll be prompted to pull first. Locked maps prompt for the password.
 
 ### `diff`
 
 ```bash
-storymaps diff                        # summary vs remote
-storymaps diff --full                 # line-by-line diff
+storymaps diff                        # summary of changes vs remote
+storymaps diff --full                 # full line-by-line diff
 storymaps diff file1.yml file2.yml    # compare two local files
 ```
 
 ### `status`
 
-Progress overview - slices, status counts, blocked stories.
+Progress overview: slices, status counts, and blocked stories.
 
 ### `lock` / `unlock`
 
 ```bash
-storymaps lock
+storymaps lock                        # lock the map with a password
 storymaps unlock                      # session unlock
 storymaps unlock --remove             # permanently remove the lock
 ```
@@ -139,29 +139,16 @@ storymaps unlock --remove             # permanently remove the lock
 ### `validate`
 
 ```bash
-storymaps validate storymap.yml
+storymaps validate storymap.yml       # check YAML structure
 ```
 
 ### `convert`
 
 ```bash
-storymaps convert storymap.yml --to json
-storymaps convert storymap.json --to yaml --out storymap.yml
+storymaps convert storymap.yml --to json                    # YAML to JSON
+storymaps convert storymap.json --to yaml --out storymap.yml # JSON to YAML
 ```
 
-### `import`
-
-Import tasks from an external project tracker into a storymap. Currently supports Phabricator.
-
-```bash
-storymaps import --from phabricator --tag my-project
-storymaps import --from phab --tag my-project --site localhost
-storymaps import --from phab --tag my-project --status open,in-progress
-```
-
-Epics (tasks tagged with `Epic` in Phabricator) become steps with their subtasks as cards. Standalone tasks are grouped into backlog columns. The map is registered on the server automatically.
-
-On first run you'll be prompted for your Phabricator instance URL and Conduit API token. Credentials are saved to `~/.storymaps/credentials.json`.
 
 ## YAML Format
 
