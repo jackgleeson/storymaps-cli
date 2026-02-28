@@ -133,6 +133,15 @@ storymaps status other.yml            # progress overview of a specific file
 
 Progress overview: slices, status counts, and blocked stories.
 
+### `log`
+
+```bash
+storymaps log                         # activity log for storymap.yml
+storymaps log storymaps.io/abc123     # activity log for a specific map
+```
+
+Shows timestamped activity entries with source labels (cli, mobile, web).
+
 ### `lock` / `unlock`
 
 ```bash

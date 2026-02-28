@@ -16,6 +16,7 @@ import { openCommand } from '../lib/commands/open.js';
 import { lockCommand } from '../lib/commands/lock.js';
 import { unlockCommand } from '../lib/commands/unlock.js';
 import { statusCommand } from '../lib/commands/status.js';
+import { logCommand } from '../lib/commands/log.js';
 
 
 const program = new Command();
@@ -101,6 +102,12 @@ program
     .option('-f, --file <path>', 'path to storymap file', 'storymap.yml')
     .action(statusCommand);
 
+program
+    .command('log')
+    .description('Show activity log for a map')
+    .argument('[target]', 'map ID, domain/ID, or full URL')
+    .option('-f, --file <path>', 'local file path', 'storymap.yml')
+    .action(logCommand);
 
 program.parseAsync().catch(err => {
     const message = err.name === 'ExitPromptError' ? 'Cancelled.'
