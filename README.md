@@ -265,7 +265,7 @@ The CLI works with any storymaps.io instance:
 storymaps init --site storymaps.yourcompany.com
 ```
 
-See the [main project README](https://github.com/jackgleeson/userstorymaps#self-hosting) for setup instructions.
+See the [main project README](https://github.com/jackgleeson/storymaps.io#self-hosting) for setup instructions.
 
 ## Licence
 
