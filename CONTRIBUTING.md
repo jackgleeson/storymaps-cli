@@ -29,7 +29,7 @@ Open an issue on [GitHub](https://github.com/jackgleeson/storymaps.io/issues) wi
 1. Fork the repository
 2. Create a feature branch from `main`
 3. Make your changes
-4. Test locally
+4. Test locally: `npm test` runs the unit tests
 5. Submit a pull request with a clear description of the change
 
 By opening a pull request, you confirm that you have read and agree to the Contributor Licence Agreement above.

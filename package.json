@@ -6,6 +6,10 @@
   "bin": {
     "storymaps": "./bin/storymaps.js"
   },
+  "scripts": {
+    "test": "node --test 'test/unit/**/*.test.js'",
+    "test:integration": "node --test 'test/integration/**/*.test.js'"
+  },
   "keywords": [
     "story-mapping",
     "user-story",
