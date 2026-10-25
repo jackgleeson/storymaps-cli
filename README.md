@@ -257,6 +257,8 @@ slices:
 
 Cards support: `name`, `body`, `color`, `status` (done / in-progress / planned / blocked), `points`, `tags`, and `url`.
 
+Slices support: `name`, `stories`, `goal` (up to 200 characters), `targetDate` (`YYYY-MM-DD`), and `collapsed` with `closedReason` (complete / closed).
+
 ## Self-Hosting
 
 The CLI works with any storymaps.io instance:
@@ -266,6 +268,36 @@ storymaps init --site storymaps.yourcompany.com
 ```
 
 See the [main project README](https://github.com/jackgleeson/storymaps.io#self-hosting) for setup instructions.
+
+## Development
+
+```bash
+npm install
+npm test
+```
+
+`npm test` runs the unit tests in `test/unit` with Node's built-in test runner (Node 22 or later). They cover the YAML format, the API client, the change summary, and how a target resolves to a map, with no server needed. CI runs them on Node 22 and 24 for every push to `main` and every pull request.
+
+To try a change against a local storymaps.io server, run the CLI from the repo, for example `node bin/storymaps.js pull localhost/<map-id>`.
+
+### Releasing
+
+1. Commit your changes on `main`.
+2. Bump the version in `package.json` and commit it as "Bump version to x.y.z". Use a patch for fixes and a minor version for new features.
+3. Tag the commit and push both:
+   ```bash
+   git tag vx.y.z
+   git push origin main vx.y.z
+   ```
+4. Check you're logged in to npm, then publish:
+   ```bash
+   npm whoami        # if this fails, run npm login
+   npm pack --dry-run   # optional: list what will be published
+   npm publish
+   ```
+5. Confirm the new version is live with `npm view storymaps version`.
+
+Only `bin/`, `lib/`, the README and the licence are published (see `files` in `package.json`).
 
 ## Licence
 
