@@ -1,5 +1,6 @@
 import { describe, test, beforeEach, afterEach } from 'node:test';
 import { strict as assert } from 'node:assert';
+import { readFileSync } from 'node:fs';
 import * as api from '../../lib/util/api.js';
 
 // Replace fetch with a recorder that answers with a canned response
@@ -43,13 +44,13 @@ describe('requests', () => {
     const [req] = requests;
     assert.equal(req.method, 'PUT');
     assert.equal(req.url, `${BASE}/api/maps/abc12345`);
-    assert.deepEqual(req.headers, { 'Content-Type': 'text/yaml', 'If-Match': '"abc"', 'X-Lock-Password': 'h' });
+    assert.deepEqual(req.headers, { 'User-Agent': api.USER_AGENT, 'Content-Type': 'text/yaml', 'If-Match': '"abc"', 'X-Lock-Password': 'h' });
     assert.equal(req.body, 'name: x\n');
   });
 
   test('putMap without an ETag sends no If-Match, so it overwrites', async () => {
     await api.putMap(BASE, 'abc12345', '{}', { contentType: 'application/json' });
-    assert.deepEqual(requests[0].headers, { 'Content-Type': 'application/json' });
+    assert.deepEqual(requests[0].headers, { 'User-Agent': api.USER_AGENT, 'Content-Type': 'application/json' });
   });
 
   test('postMap creates a map', async () => {
@@ -75,6 +76,16 @@ describe('requests', () => {
     reply = { status: 200, body: '{"isLocked":false}', headers: {} };
     assert.deepEqual(await api.getLockStatus(BASE, 'abc12345'), { isLocked: false });
     assert.deepEqual(requests.map(r => r.url.replace(BASE, '')), ['/api/maps/abc12345/log', '/api/lock/abc12345']);
+  });
+
+  test('every request names the CLI and its version', async () => {
+    const { version } = JSON.parse(readFileSync(new URL('../../package.json', import.meta.url), 'utf-8'));
+    assert.equal(api.USER_AGENT, `storymaps-cli/${version}`);
+    await api.getMap(BASE, 'abc12345');
+    await api.getNewId(BASE);
+    await api.postMap(BASE, 'name: x\n');
+    await api.lockMap(BASE, 'abc12345', 'h');
+    assert.ok(requests.every(r => r.headers['User-Agent'] === api.USER_AGENT));
   });
 });
 
