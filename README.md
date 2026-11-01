@@ -23,6 +23,12 @@ Story maps are structured data. The CLI lets you export the structure behind the
 npm install -g storymaps
 ```
 
+Or run it without installing, the way the Build with AI command on storymaps.io does:
+
+```bash
+npx storymaps pull storymaps.io/abc123
+```
+
 Or clone and link locally:
 
 ```bash
@@ -43,6 +49,7 @@ Or pull an existing map:
 
 ```bash
 storymaps pull storymaps.io/abc123    # download as YAML
+storymaps pull storymaps.io/p/k8f2m9xq/abc123    # a map inside a project link works too
 ```
 
 Edit the YAML, then push it back:
@@ -104,17 +111,19 @@ storymaps open storymaps.io/abc123    # open a specific remote map
 ```bash
 storymaps pull                        # uses id/site from storymap.yml
 storymaps pull storymaps.io/abc123    # pull a specific map
+storymaps pull --force                # overwrite the local file without asking
 ```
 
-Shows a summary of changes before overwriting.
+Shows a summary of changes and asks before overwriting the local file, unless you pass `--force`.
 
 ### `push`
 
 ```bash
 storymaps push                        # push local changes to the server
+storymaps push --force                # skip the conflict check and overwrite the server copy
 ```
 
-If the file has no `id`, a new map is created on the server. Conflicts are detected using ETags. If the remote has changed since your last pull, you'll be prompted to pull first. Locked maps prompt for the password.
+If the file has no `id`, a new map is created on the server. Conflicts are detected using ETags. If the remote has changed since your last pull, you'll be prompted to pull first; `--force` pushes anyway and replaces whatever changed on the server. Locked maps prompt for the password.
 
 ### `diff`
 
@@ -155,6 +164,12 @@ storymaps unlock --remove             # permanently remove the lock
 ```bash
 storymaps validate storymap.yml       # check YAML structure
 ```
+
+### Options
+
+A target can be a map ID, `domain/id`, or a full URL, including a map inside a project link (`storymaps.io/p/<project>/<map>`).
+
+`pull`, `push`, `open`, `lock`, `unlock`, `status` and `log` take `-f, --file <path>` to use a file other than `storymap.yml`.
 
 ### `convert`
 
@@ -259,6 +274,16 @@ Cards support: `name`, `body`, `color`, `status` (done / in-progress / planned /
 
 Slices support: `name`, `stories`, `goal` (up to 200 characters), `targetDate` (`YYYY-MM-DD`), and `collapsed` with `closedReason` (complete / closed).
 
+## Use with AI Coding Agents
+
+A story map makes a good specification for an AI coding agent: the YAML lists every step of the journey and the cards under each one, slice by slice. **Build with AI** on storymaps.io writes the command for you:
+
+```bash
+npx storymaps pull --force storymaps.io/abc123 && claude "The storymap file @storymap.yml describes a product plan in user story map format. Use it as a structured specification. Your task: build a functional prototype of the features listed in the 'MVP' slice."
+```
+
+From there you steer the agent a slice or a feature at a time ("now build search from the V1 slice"). When a feature has been through QA, set its cards to `status: done` in `storymap.yml` and `storymaps push`, so the map shows the progress to everyone else. Pull again before the next round to pick up changes made in the browser.
+
 ## Self-Hosting
 
 The CLI works with any storymaps.io instance:
@@ -268,6 +293,8 @@ storymaps init --site storymaps.yourcompany.com
 ```
 
 See the [main project README](https://github.com/jackgleeson/storymaps.io#self-hosting) for setup instructions.
+
+Every request names the CLI and its version in the User-Agent header (`storymaps-cli/<version>`), so CLI use shows up as such in your server logs.
 
 ## Development
 
@@ -283,7 +310,7 @@ To try a change against a local storymaps.io server, run the CLI from the repo, 
 ### Releasing
 
 1. Commit your changes on `main`.
-2. Bump the version in `package.json` and commit it as "Bump version to x.y.z". Use a patch for fixes and a minor version for new features.
+2. Bump the version in `package.json` and in both places near the top of `package-lock.json`, and commit it as "Bump version to x.y.z". Use a patch for fixes and a minor version for new features.
 3. Tag the commit and push both:
    ```bash
    git tag vx.y.z
