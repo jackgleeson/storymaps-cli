@@ -138,9 +138,10 @@ storymaps diff file1.yml file2.yml    # compare two local files
 ```bash
 storymaps status                      # progress overview of storymap.yml
 storymaps status other.yml            # progress overview of a specific file
+storymaps status storymaps.io/abc123  # progress overview of a map on the server, no file needed
 ```
 
-Progress overview: slices, status counts, and blocked stories.
+Progress overview: slices, status counts, and blocked stories. A link to a map inside a project works too.
 
 ### `log`
 

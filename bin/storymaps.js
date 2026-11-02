@@ -99,7 +99,7 @@ program
 program
     .command('status')
     .description('Show a progress overview of the story map')
-    .argument('[file]', 'path to storymap file')
+    .argument('[target]', 'storymap file, or a map ID, domain/ID, or full URL')
     .option('-f, --file <path>', 'path to storymap file', 'storymap.yml')
     .action(statusCommand);
 
