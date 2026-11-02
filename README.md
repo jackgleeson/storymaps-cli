@@ -38,6 +38,16 @@ npm install
 npm link
 ```
 
+## Use with AI Coding Agents
+
+A story map makes a good specification for an AI coding agent: the YAML lists every step of the journey and the cards under each one, slice by slice. **Build with AI** on storymaps.io writes the command for you:
+
+```bash
+npx storymaps pull --force storymaps.io/abc123 && claude "The storymap file @storymap.yml describes a product plan in user story map format. Use it as a structured specification. Your task: build a functional prototype of the features listed in the 'MVP' slice."
+```
+
+From there you steer the agent a slice or a feature at a time ("now build search from the V1 slice"). When a feature has been through QA, set its cards to `status: done` in `storymap.yml` and `storymaps push`, so the map shows the progress to everyone else. Pull again before the next round to pick up changes made in the browser.
+
 ## Quick Start
 
 ```bash
@@ -316,16 +326,6 @@ slices:
 Cards support: `name`, `body`, `color`, `status` (done / in-progress / planned / blocked), `points`, `tags`, and `url`.
 
 Slices support: `name`, `stories`, `goal` (up to 200 characters), `targetDate` (`YYYY-MM-DD`), and `collapsed` with `closedReason` (complete / closed).
-
-## Use with AI Coding Agents
-
-A story map makes a good specification for an AI coding agent: the YAML lists every step of the journey and the cards under each one, slice by slice. **Build with AI** on storymaps.io writes the command for you:
-
-```bash
-npx storymaps pull --force storymaps.io/abc123 && claude "The storymap file @storymap.yml describes a product plan in user story map format. Use it as a structured specification. Your task: build a functional prototype of the features listed in the 'MVP' slice."
-```
-
-From there you steer the agent a slice or a feature at a time ("now build search from the V1 slice"). When a feature has been through QA, set its cards to `status: done` in `storymap.yml` and `storymaps push`, so the map shows the progress to everyone else. Pull again before the next round to pick up changes made in the browser.
 
 ## Self-Hosting
 
