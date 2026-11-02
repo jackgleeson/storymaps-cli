@@ -27,6 +27,11 @@ describe('resolveTarget', () => {
     assert.deepEqual(await resolveTarget('localhost/abc12345', missing()), { id: 'abc12345', baseUrl: 'http://localhost:3000' });
   });
 
+  test('a map inside a project link gives the map ID, as a full URL or as domain/path', async () => {
+    assert.deepEqual(await resolveTarget('https://storymaps.io/p/k8f2m9xq/abc12345', missing()), { id: 'abc12345', baseUrl: 'https://storymaps.io' });
+    assert.deepEqual(await resolveTarget('storymaps.io/p/k8f2m9xq/abc12345', missing()), { id: 'abc12345', baseUrl: 'https://storymaps.io' });
+  });
+
   test('a bare ID uses the site in the local file, or storymaps.io', async () => {
     const selfHosted = file('self.yml', 'name: x\nsite: maps.example.com\n');
     assert.deepEqual(await resolveTarget('abc12345', selfHosted), { id: 'abc12345', baseUrl: 'https://maps.example.com' });
