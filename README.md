@@ -160,17 +160,47 @@ storymaps unlock                      # session unlock
 storymaps unlock --remove             # permanently remove the lock
 ```
 
-### `backup` / `backups` / `restore`
+### `backup`
+
+Backs up the map on the server. Add a note to tell the backup apart later.
 
 ```bash
-storymaps backup                      # back up the map on the server
+storymaps backup                             # back up the map in storymap.yml
 storymaps backup -m "Before the workshop"    # with a note
-storymaps backups                     # list the backups, newest first
-storymaps restore 7ed8450a830a        # restore one, after backing up the map as it is now
-storymaps restore 7ed8450a830a --force       # restore without asking first
+storymaps backup storymaps.io/abc123         # back up a map you haven't pulled
 ```
 
-These are the same backups as **Menu → Backups** in the app, and the server keeps the newest 8 of each map. A restore changes the map on the server, not your local file, so run `storymaps pull` afterwards. Until you do, `storymaps push` stops with a conflict, so an old local file can't undo the restore. On a locked map, restore asks for the password, or uses the one saved by `storymaps unlock`. A self-hosted server needs updating before the CLI can make backups on it.
+The backup shows in the map's activity log, and in **Menu → Backups** in the app.
+
+### `backups`
+
+Lists a map's backups, newest first, with the ID you need to restore one.
+
+```bash
+> storymaps backups
+
+6e40f124ae7e  13:25  63 cards   Before the workshop
+998e16f31f84  11:02  58 cards   (no note)
+```
+
+### `restore`
+
+Puts the map back the way it was in one of its backups. Give it the backup ID from `storymaps backups`.
+
+```bash
+storymaps restore 6e40f124ae7e               # asks before it restores
+storymaps restore 6e40f124ae7e --force       # restores without asking
+```
+
+- **It backs up first.** Before restoring, the CLI backs up the map as it is now, so a restore can be undone with another restore.
+- **It changes the server, not your file.** Run `storymaps pull` afterwards to get the restored map. Until you do, `storymaps push` stops with a conflict, so an old local file can't undo the restore by accident.
+- **Locked maps** use the password saved by `storymaps unlock`, or ask for it.
+
+### About backups
+
+- The CLI and the app share the same backups. A backup made in the app shows in `storymaps backups`, and one made with the CLI shows in the app.
+- The server keeps the newest 8 backups of each map.
+- A self-hosted server needs updating before the CLI can make backups on it. An older one turns the request away, and the CLI says so.
 
 ### `validate`
 
@@ -182,7 +212,7 @@ storymaps validate storymap.yml       # check YAML structure
 
 A target can be a map ID, `domain/id`, or a full URL, including a map inside a project link (`storymaps.io/p/<project>/<map>`).
 
-`pull`, `push`, `open`, `lock`, `unlock`, `status` and `log` take `-f, --file <path>` to use a file other than `storymap.yml`.
+`pull`, `push`, `open`, `lock`, `unlock`, `status`, `log`, `backup`, `backups` and `restore` take `-f, --file <path>` to use a file other than `storymap.yml`.
 
 ### `convert`
 

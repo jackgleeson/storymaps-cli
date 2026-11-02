@@ -128,7 +128,7 @@ program
 program
     .command('restore')
     .description('Restore a map from one of its backups, after backing up the map as it is now')
-    .argument('<backup>', 'backup ID, from storymaps backups')
+    .argument('<backup-id>', 'the ID of a backup, from storymaps backups')
     .argument('[target]', 'map ID, domain/ID, or full URL')
     .option('-f, --file <path>', 'local file path', 'storymap.yml')
     .option('--force', 'restore without asking first')

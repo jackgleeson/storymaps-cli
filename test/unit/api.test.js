@@ -48,6 +48,11 @@ describe('requests', () => {
     assert.equal(req.body, 'name: x\n');
   });
 
+  test('putMap marks a restore, so the server logs it as one', async () => {
+    await api.putMap(BASE, 'abc12345', '{}', { contentType: 'application/json', restoredBackup: '0123456789ab' });
+    assert.equal(requests[0].headers['X-Restored-Backup'], '0123456789ab');
+  });
+
   test('putMap without an ETag sends no If-Match, so it overwrites', async () => {
     await api.putMap(BASE, 'abc12345', '{}', { contentType: 'application/json' });
     assert.deepEqual(requests[0].headers, { 'User-Agent': api.USER_AGENT, 'Content-Type': 'application/json' });
