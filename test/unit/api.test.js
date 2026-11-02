@@ -78,6 +78,17 @@ describe('requests', () => {
     assert.deepEqual(requests.map(r => r.url.replace(BASE, '')), ['/api/maps/abc12345/log', '/api/lock/abc12345']);
   });
 
+  test('the backup calls list, fetch and make backups', async () => {
+    reply = { status: 200, body: '{"id":"0123456789ab","cardCount":4}', headers: {} };
+    await api.listBackups(BASE, 'abc12345');
+    await api.getBackup(BASE, 'abc12345', '0123456789ab');
+    assert.deepEqual(await api.createBackup(BASE, 'abc12345', 'Before the workshop'), { id: '0123456789ab', cardCount: 4 });
+    assert.deepEqual(requests.map(r => [r.method || 'GET', r.url.replace(BASE, '')]), [
+      ['GET', '/api/backups/abc12345'], ['GET', '/api/backups/abc12345/0123456789ab'], ['POST', '/api/backups/abc12345'],
+    ]);
+    assert.deepEqual(JSON.parse(requests[2].body), { note: 'Before the workshop' });
+  });
+
   test('every request names the CLI and its version', async () => {
     const { version } = JSON.parse(readFileSync(new URL('../../package.json', import.meta.url), 'utf-8'));
     assert.equal(api.USER_AGENT, `storymaps-cli/${version}`);
@@ -118,6 +129,16 @@ describe('errors', () => {
   test('locking a map someone else already locked gives a readable message', async () => {
     reply = { status: 403, body: '{"error":"Map is already locked"}', headers: {} };
     await assert.rejects(api.lockMap(BASE, 'abc12345', 'h'), (err) => err.message === 'Map is already locked');
+  });
+
+  test('a missing backup names the backup, not the map', async () => {
+    reply = { status: 404, body: '{"error":"Backup not found"}', headers: {} };
+    await assert.rejects(api.getBackup(BASE, 'abc12345', 'nothere'), (err) => err.message === 'Backup not found: nothere');
+  });
+
+  test('a server that turns away backups from the CLI says so', async () => {
+    reply = { status: 403, body: '{"error":"Forbidden"}', headers: {} };
+    await assert.rejects(api.createBackup(BASE, 'abc12345'), /does not take backups from the CLI yet/);
   });
 
   test('other errors show the server message', async () => {

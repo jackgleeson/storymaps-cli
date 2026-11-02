@@ -159,6 +159,18 @@ storymaps unlock                      # session unlock
 storymaps unlock --remove             # permanently remove the lock
 ```
 
+### `backup` / `backups` / `restore`
+
+```bash
+storymaps backup                      # back up the map on the server
+storymaps backup -m "Before the workshop"    # with a note
+storymaps backups                     # list the backups, newest first
+storymaps restore 7ed8450a830a        # restore one, after backing up the map as it is now
+storymaps restore 7ed8450a830a --force       # restore without asking first
+```
+
+These are the same backups as **Menu → Backups** in the app, and the server keeps the newest 8 of each map. A restore changes the map on the server, not your local file, so run `storymaps pull` afterwards. Until you do, `storymaps push` stops with a conflict, so an old local file can't undo the restore. On a locked map, restore asks for the password, or uses the one saved by `storymaps unlock`. A self-hosted server needs updating before the CLI can make backups on it.
+
 ### `validate`
 
 ```bash

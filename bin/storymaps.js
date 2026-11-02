@@ -17,6 +17,7 @@ import { lockCommand } from '../lib/commands/lock.js';
 import { unlockCommand } from '../lib/commands/unlock.js';
 import { statusCommand } from '../lib/commands/status.js';
 import { logCommand } from '../lib/commands/log.js';
+import { backupCommand, backupsCommand, restoreCommand } from '../lib/commands/backup.js';
 
 
 const program = new Command();
@@ -108,6 +109,30 @@ program
     .argument('[target]', 'map ID, domain/ID, or full URL')
     .option('-f, --file <path>', 'local file path', 'storymap.yml')
     .action(logCommand);
+
+program
+    .command('backup')
+    .description('Back up a map on the server')
+    .argument('[target]', 'map ID, domain/ID, or full URL')
+    .option('-f, --file <path>', 'local file path', 'storymap.yml')
+    .option('-m, --message <note>', 'a note to tell the backup apart')
+    .action(backupCommand);
+
+program
+    .command('backups')
+    .description('List the backups of a map, newest first')
+    .argument('[target]', 'map ID, domain/ID, or full URL')
+    .option('-f, --file <path>', 'local file path', 'storymap.yml')
+    .action(backupsCommand);
+
+program
+    .command('restore')
+    .description('Restore a map from one of its backups, after backing up the map as it is now')
+    .argument('<backup>', 'backup ID, from storymaps backups')
+    .argument('[target]', 'map ID, domain/ID, or full URL')
+    .option('-f, --file <path>', 'local file path', 'storymap.yml')
+    .option('--force', 'restore without asking first')
+    .action(restoreCommand);
 
 program.parseAsync().catch(err => {
     const message = err.name === 'ExitPromptError' ? 'Cancelled.'
