@@ -180,7 +180,9 @@ storymaps backup -m "Before the workshop"    # with a note
 storymaps backup storymaps.io/abc123         # back up a map you haven't pulled
 ```
 
-The backup shows in the map's activity log, and in **Menu → Backups** in the app.
+The backup shows in the map's activity log, and in **Menu → Backups** in the app. If the map hasn't changed since one of its backups, no new backup is made, and the CLI says which backup matches.
+
+**Locked maps** use the password saved by `storymaps unlock`, or ask for it.
 
 ### `backups`
 
@@ -209,7 +211,8 @@ storymaps restore 6e40f124ae7e --force       # restores without asking
 ### About backups
 
 - The CLI and the app share the same backups. A backup made in the app shows in `storymaps backups`, and one made with the CLI shows in the app.
-- The server keeps the newest 8 backups of each map.
+- The server keeps the newest 8 backups of each map. Backups are protected from deletion, but can be removed if needed by contacting us.
+- Making a backup of a locked map needs its password, so nobody else can push its backups out.
 - A self-hosted server needs updating before the CLI can make backups on it. An older one turns the request away, and the CLI says so.
 
 ### `validate`

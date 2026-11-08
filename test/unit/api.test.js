@@ -94,6 +94,14 @@ describe('requests', () => {
     assert.deepEqual(JSON.parse(requests[2].body), { note: 'Before the workshop' });
   });
 
+  test('making a backup sends the lock password when there is one', async () => {
+    reply = { status: 200, body: '{"id":"0123456789ab"}', headers: {} };
+    await api.createBackup(BASE, 'abc12345', '');
+    await api.createBackup(BASE, 'abc12345', '', { lockPasswordHash: 'hash' });
+    assert.equal(requests[0].headers['X-Lock-Password'], undefined);
+    assert.equal(requests[1].headers['X-Lock-Password'], 'hash');
+  });
+
   test('every request names the CLI and its version', async () => {
     const { version } = JSON.parse(readFileSync(new URL('../../package.json', import.meta.url), 'utf-8'));
     assert.equal(api.USER_AGENT, `storymaps-cli/${version}`);
