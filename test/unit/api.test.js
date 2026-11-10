@@ -123,7 +123,7 @@ describe('errors', () => {
   test('maps the server status codes to clear messages', async () => {
     assert.equal((await failWith(404)).message, 'Map not found');
     assert.equal((await failWith(423)).message, 'Map is locked');
-    assert.equal((await failWith(429)).message, 'Rate limited — please wait and try again');
+    assert.equal((await failWith(429)).message, 'Rate limited. Please wait and try again.');
   });
 
   test('a 409 is a conflict, with the server message', async () => {
