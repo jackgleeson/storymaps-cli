@@ -76,7 +76,7 @@ program
 program
     .command('diff')
     .description('Compare a local file against the remote or another local file, or every map in a project folder')
-    .argument('[source]', 'local file to compare (default: storymap.yml)')
+    .argument('[source]', 'local file to compare, or a map link or ID to compare its local file (default: storymap.yml)')
     .argument('[target]', 'second local file (omit to compare against remote)')
     .option('--full', 'show the full file instead of just changed regions')
     .option('--dir <folder>', DIR_HELP)

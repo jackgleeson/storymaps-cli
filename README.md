@@ -217,6 +217,7 @@ If the file has no `id`, a new map is created on the server. Conflicts are detec
 storymaps diff                        # summary of changes vs remote
 storymaps diff --full                 # full line-by-line diff
 storymaps diff file1.yml file2.yml    # compare two local files
+storymaps diff storymaps.io/abc123    # the local file of that map, compared with the server
 ```
 
 ### `status`
