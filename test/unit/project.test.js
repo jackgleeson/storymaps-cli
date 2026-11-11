@@ -108,6 +108,13 @@ describe('project folders', () => {
         assert.match(logged.join('\n'), /Using storymap\.yml\. Add --dir storymaps for the project in storymaps\/\./);
     });
 
+    test('a folder named with --dir that is not a project folder stops the command', async () => {
+        const dir = repo('h');
+        writeFileSync(join(dir, 'storymap.yml'), map('Solo', 'cccc3333'));
+        await assert.rejects(findProjectFolder({ dir: 'storymap' }), (err) => err instanceof StopError && /no folder called storymap\./.test(err.message));
+        await assert.rejects(findProjectFolder({ dir: 'storymaps' }), (err) => err instanceof StopError && /storymaps has no map files from a project/.test(err.message));
+    });
+
     test('files from two projects stop the command', async () => {
         const dir = repo('c');
         writeFileSync(join(dir, 'storymaps', 'aaaa1111.yml'), map('Ordering', 'aaaa1111', 'proj1234'));
