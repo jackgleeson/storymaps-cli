@@ -26,7 +26,7 @@ const program = new Command();
 program
     .name('storymaps')
     .description('CLI companion for storymaps.io: manage user story maps from the terminal')
-    .version(pkg.version)
+    .version(pkg.version, '-v, --version', 'output the version number')
     .showHelpAfterError()
     .addHelpText('after', '\nRun storymaps <command> --help for details on a specific command.');
 
