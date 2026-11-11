@@ -5,6 +5,7 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import {
     setProjectKey, removeProjectKey, setIdKey, setSiteKey, siteOfBaseUrl, readProjectFiles, findProjectFolder,
+    defaultProjectDir,
 } from '../../lib/util/project.js';
 import { choose, ask, guard, askPassword, hashPassword, StopError, PASSWORD_ENV } from '../../lib/util/prompt.js';
 import { listNames } from '../../lib/util/passwords.js';
@@ -73,6 +74,38 @@ describe('project folders', () => {
         assert.equal(await findProjectFolder({}), null);
         assert.equal(await findProjectFolder({ file: 'storymaps/aaaa1111.yml' }), null);
         assert.equal((await findProjectFolder({ dir: 'storymaps' })).projectId, 'proj1234');
+    });
+
+    test('a project is pulled into storymaps/, or into the current folder from inside one, never storymaps/storymaps/', async () => {
+        const dir = join(root, 'e');
+        mkdirSync(dir, { recursive: true });
+        process.chdir(dir);
+        assert.equal(await defaultProjectDir(), join(dir, 'storymaps'));
+        mkdirSync(join(dir, 'storymaps'));
+        process.chdir(join(dir, 'storymaps'));
+        assert.equal(await defaultProjectDir(), join(dir, 'storymaps'));
+        // A folder with another name that already holds project files is a project folder too
+        const other = join(root, 'f');
+        mkdirSync(other, { recursive: true });
+        writeFileSync(join(other, 'aaaa1111.yml'), map('Ordering', 'aaaa1111', 'proj1234'));
+        process.chdir(other);
+        assert.equal(await defaultProjectDir(), other);
+        assert.equal(await defaultProjectDir('elsewhere'), join(other, 'elsewhere'));
+    });
+
+    test('when storymap.yml wins, a project in reach is mentioned with its --dir', async () => {
+        const dir = repo('g');
+        writeFileSync(join(dir, 'storymaps', 'aaaa1111.yml'), map('Ordering', 'aaaa1111', 'proj1234'));
+        writeFileSync(join(dir, 'storymap.yml'), map('Solo', 'cccc3333'));
+        const logged = [];
+        const log = console.log;
+        console.log = (line) => logged.push(line);
+        try {
+            assert.equal(await findProjectFolder({}), null);
+        } finally {
+            console.log = log;
+        }
+        assert.match(logged.join('\n'), /Using storymap\.yml\. Add --dir storymaps for the project in storymaps\/\./);
     });
 
     test('files from two projects stop the command', async () => {
