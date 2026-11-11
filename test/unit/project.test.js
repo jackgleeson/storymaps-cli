@@ -141,6 +141,10 @@ describe('questions with no terminal', () => {
             process.env[PASSWORD_ENV] = 'cafe';
             assert.equal(await askPassword(), hashPassword('cafe'));
             assert.equal(await askPassword({ confirmTwice: true }), hashPassword('cafe'));
+            // A new password needs at least 4 characters, as in the app; checking one doesn't
+            process.env[PASSWORD_ENV] = 'abc';
+            await assert.rejects(askPassword({ confirmTwice: true }), /at least 4 characters/);
+            assert.equal(await askPassword(), hashPassword('abc'));
             await assert.rejects(askPassword({ allowEnv: false, noPasswordMessage: 'Unlock first.' }), /Unlock first\./);
             delete process.env[PASSWORD_ENV];
             await assert.rejects(askPassword(), (err) => err instanceof StopError && /STORYMAPS_PASSWORD/.test(err.message));
