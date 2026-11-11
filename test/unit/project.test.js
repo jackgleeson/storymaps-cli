@@ -67,52 +67,28 @@ describe('project folders', () => {
         assert.equal((await findProjectFolder({})).projectId, 'proj1234');
     });
 
-    test('a storymap.yml in the current folder means one map, as before projects, and -f always does', async () => {
+    test('a project in reach wins over storymap.yml, which is one -f away, and -f always means one map', async () => {
         const dir = repo('b');
-        writeFileSync(join(dir, 'storymaps', 'aaaa1111.yml'), map('Ordering', 'aaaa1111', 'proj1234'));
-        writeFileSync(join(dir, 'storymap.yml'), map('Solo', 'cccc3333'));
-        assert.equal(await findProjectFolder({}), null);
-        assert.equal(await findProjectFolder({ file: 'storymaps/aaaa1111.yml' }), null);
-        assert.equal((await findProjectFolder({ dir: 'storymaps' })).projectId, 'proj1234');
-    });
-
-    test('a project is pulled into storymaps/, or into the current folder from inside one, never storymaps/storymaps/', async () => {
-        const dir = join(root, 'e');
-        mkdirSync(dir, { recursive: true });
-        process.chdir(dir);
-        assert.equal(await defaultProjectDir(), join(dir, 'storymaps'));
-        mkdirSync(join(dir, 'storymaps'));
-        process.chdir(join(dir, 'storymaps'));
-        assert.equal(await defaultProjectDir(), join(dir, 'storymaps'));
-        // A folder with another name that already holds project files is a project folder too
-        const other = join(root, 'f');
-        mkdirSync(other, { recursive: true });
-        writeFileSync(join(other, 'aaaa1111.yml'), map('Ordering', 'aaaa1111', 'proj1234'));
-        process.chdir(other);
-        assert.equal(await defaultProjectDir(), other);
-        assert.equal(await defaultProjectDir('elsewhere'), join(other, 'elsewhere'));
-    });
-
-    test('when storymap.yml wins, a project in reach is mentioned with its --dir', async () => {
-        const dir = repo('g');
         writeFileSync(join(dir, 'storymaps', 'aaaa1111.yml'), map('Ordering', 'aaaa1111', 'proj1234'));
         writeFileSync(join(dir, 'storymap.yml'), map('Solo', 'cccc3333'));
         const logged = [];
         const log = console.log;
         console.log = (line) => logged.push(line);
         try {
-            assert.equal(await findProjectFolder({}), null);
+            assert.equal((await findProjectFolder({})).projectId, 'proj1234');
         } finally {
             console.log = log;
         }
-        assert.match(logged.join('\n'), /Using storymap\.yml\. Add --dir storymaps for the project in storymaps\/\./);
+        assert.match(logged.join('\n'), /Using the project in storymaps\/\. Add -f storymap\.yml for the map in storymap\.yml\./);
+        assert.equal(await findProjectFolder({ file: 'storymap.yml' }), null);
     });
 
-    test('a folder named with --dir that is not a project folder stops the command', async () => {
-        const dir = repo('h');
+    test('with no project in reach, storymap.yml means one map, as before projects', async () => {
+        const dir = join(root, 'solo');
+        mkdirSync(dir, { recursive: true });
+        process.chdir(dir);
         writeFileSync(join(dir, 'storymap.yml'), map('Solo', 'cccc3333'));
-        await assert.rejects(findProjectFolder({ dir: 'storymap' }), (err) => err instanceof StopError && /no folder called storymap\./.test(err.message));
-        await assert.rejects(findProjectFolder({ dir: 'storymaps' }), (err) => err instanceof StopError && /storymaps has no map files from a project/.test(err.message));
+        assert.equal(await findProjectFolder({}), null);
     });
 
     test('files from two projects stop the command', async () => {

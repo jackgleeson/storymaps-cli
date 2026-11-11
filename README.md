@@ -101,7 +101,7 @@ site: storymaps.io
 - **Push checks everything before it sends anything**: every file, every conflict and every password. A project never ends up half pushed. A file this computer never pulled, such as one from a fresh clone, stops push until you pull.
 - **The CLI never moves, renames or deletes your files**, so a map open in an editor never looks deleted. The one exception is a map started offline whose ID turns out to be taken by another map: it gets a fresh ID, and its file is renamed to match.
 - **A map removed from the project in the app** keeps its file, and pull takes its `project` key out. Push never adds a map back by accident.
-- `storymap.yml` in the current folder still means one map, exactly as before.
+- **A project in reach wins**: `storymaps/` below you, or project files in the current folder, so commands work from the repo root. A `storymap.yml` beside a project is one `-f storymap.yml` away, and the command says so. A folder with only `storymap.yml` works exactly as before.
 
 ### `project init`
 
