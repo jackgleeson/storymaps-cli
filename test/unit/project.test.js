@@ -5,7 +5,7 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import {
     setProjectKey, removeProjectKey, setIdKey, setSiteKey, siteOfBaseUrl, readProjectFiles, findProjectFolder,
-    defaultProjectDir,
+    defaultProjectDir, updateLockedInFolder,
 } from '../../lib/util/project.js';
 import { choose, ask, guard, askPassword, hashPassword, StopError, PASSWORD_ENV } from '../../lib/util/prompt.js';
 import { listNames } from '../../lib/util/passwords.js';
@@ -89,6 +89,20 @@ describe('project folders', () => {
         process.chdir(dir);
         writeFileSync(join(dir, 'storymap.yml'), map('Solo', 'cccc3333'));
         assert.equal(await findProjectFolder({}), null);
+    });
+
+    test('after a lock changes, the locked line in each affected file says so, and nothing else changes', async () => {
+        const dir = repo('i');
+        const file = (id, name) => `name: ${name}\nid: ${id}\nproject: proj1234\nsite: storymaps.io\nlocked: false\nsteps:\n  - A\n`;
+        writeFileSync(join(dir, 'storymaps', 'aaaa1111.yml'), file('aaaa1111', 'Ordering'));
+        writeFileSync(join(dir, 'storymaps', 'bbbb2222.yml'), file('bbbb2222', 'Loyalty'));
+        const before = { maps: [{ id: 'aaaa1111' }, { id: 'bbbb2222', lock: 'map' }] };
+        const after = { maps: [{ id: 'aaaa1111', lock: 'project' }, { id: 'bbbb2222', lock: 'map' }] };
+        await updateLockedInFolder(join(dir, 'storymaps'), before, after);
+        const { readFileSync } = await import('node:fs');
+        assert.equal(readFileSync(join(dir, 'storymaps', 'aaaa1111.yml'), 'utf-8'), file('aaaa1111', 'Ordering').replace('locked: false', 'locked: true'));
+        // Its lock didn't change, so its file is left alone
+        assert.equal(readFileSync(join(dir, 'storymaps', 'bbbb2222.yml'), 'utf-8'), file('bbbb2222', 'Loyalty'));
     });
 
     test('files from two projects stop the command', async () => {
