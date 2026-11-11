@@ -22,9 +22,11 @@ describe('resolveTarget', () => {
     assert.deepEqual(await resolveTarget('http://localhost:3311/abc12345', missing()), { id: 'abc12345', baseUrl: 'http://localhost:3311' });
   });
 
-  test('domain/ID uses https, and localhost means the dev server on port 3000', async () => {
+  test('domain/ID uses https, and a server on this computer keeps its port, which it must name', async () => {
     assert.deepEqual(await resolveTarget('maps.example.com/abc12345', missing()), { id: 'abc12345', baseUrl: 'https://maps.example.com' });
-    assert.deepEqual(await resolveTarget('localhost/abc12345', missing()), { id: 'abc12345', baseUrl: 'http://localhost:3000' });
+    assert.deepEqual(await resolveTarget('localhost:3000/abc12345', missing()), { id: 'abc12345', baseUrl: 'http://localhost:3000' });
+    assert.deepEqual(await resolveTarget('localhost:3312/abc12345', missing()), { id: 'abc12345', baseUrl: 'http://localhost:3312' });
+    await assert.rejects(resolveTarget('localhost/abc12345', missing()), /localhost needs its port, such as localhost:3000/);
   });
 
   test('a map inside a project link gives the map ID, as a full URL or as domain/path', async () => {
@@ -50,8 +52,11 @@ describe('resolveTarget', () => {
   });
 
   test('with no argument, the ID and site come from the local file', async () => {
-    const pulled = file('pulled.yml', 'name: x\nid: abc12345\nsite: localhost\n');
+    const pulled = file('pulled.yml', 'name: x\nid: abc12345\nsite: localhost:3000\n');
     assert.deepEqual(await resolveTarget(undefined, pulled), { id: 'abc12345', baseUrl: 'http://localhost:3000' });
+    // No port is assumed for a file that names none
+    const old = file('old.yml', 'name: x\nid: abc12345\nsite: localhost\n');
+    await assert.rejects(resolveTarget(undefined, old), /localhost needs its port/);
   });
 
   test('with no argument and no ID in the file, it says so', async () => {

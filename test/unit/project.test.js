@@ -30,7 +30,7 @@ describe('header keys in a map file', () => {
 
     test('a server address becomes the site a map file names', () => {
         assert.equal(siteOfBaseUrl('https://storymaps.io'), 'storymaps.io');
-        assert.equal(siteOfBaseUrl('http://localhost:3000'), 'localhost');
+        assert.equal(siteOfBaseUrl('http://localhost:3000'), 'localhost:3000');
         assert.equal(siteOfBaseUrl('http://localhost:3312'), 'localhost:3312');
     });
 });

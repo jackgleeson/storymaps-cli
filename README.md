@@ -455,7 +455,7 @@ npm test
 
 `npm test` runs the unit tests in `test/unit` with Node's built-in test runner (Node 22 or later). They cover the YAML format, the API client, the change summary, and how a target resolves to a map, with no server needed. CI runs them on Node 22 and 24 for every push to `main` and every pull request.
 
-To try a change against a local storymaps.io server, run the CLI from the repo, for example `node bin/storymaps.js pull localhost/<map-id>`.
+To try a change against a local storymaps.io server, run the CLI from the repo, for example `node bin/storymaps.js pull localhost:3000/<map-id>`.
 
 ### Releasing
 
