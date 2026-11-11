@@ -69,6 +69,82 @@ storymaps diff                        # see what changed
 storymaps push                        # sync to the server
 ```
 
+## Projects
+
+A project groups several story maps, such as one per team or per part of a product. The CLI keeps a whole project in one `storymaps/` folder, one file per map, named by map ID so renaming a map in the app never puts a file out of step:
+
+```bash
+storymaps pull storymaps.io/p/k8f2m9xq       # every map in the project, into storymaps/
+storymaps status                              # one line per map, and a total
+storymaps push                                # checks every map first, then pushes the ones that changed
+```
+
+```
+my-repo/
+└── storymaps/
+    ├── 1g2pt83x.yml      CLI
+    ├── wtuzo7nw.yml      Web App
+    └── 8166fkm0.yml      MCP Server
+```
+
+Each file says which project it's in, straight after its `id`:
+
+```yaml
+name: CLI
+id: 1g2pt83x
+project: k8f2m9xq
+site: storymaps.io
+```
+
+- **One rule.** `storymaps <command>` works on maps: one map with `-f` or a link, or every map in the project folder without one. `storymaps project <command>` changes the project itself.
+- **A link to one map in a project** asks the first time whether you want just that map or the whole project, since the app's address bar always shows a map inside its project.
+- **Push checks everything before it sends anything**: every file, every conflict and every password. A project never ends up half pushed. A file this computer never pulled, such as one from a fresh clone, stops push until you pull.
+- **The CLI never moves, renames or deletes your files**, so a map open in an editor never looks deleted. The one exception is a map started offline whose ID turns out to be taken by another map: it gets a fresh ID, and its file is renamed to match.
+- **A map removed from the project in the app** keeps its file, and pull takes its `project` key out. Push never adds a map back by accident.
+- `storymap.yml` in the current folder still means one map, exactly as before.
+
+### `project init`
+
+```bash
+storymaps project init --name "Coffee shop"                          # a new project with a first map
+storymaps project init --name "Coffee shop" ordering.yml loyalty.yml # a map from each file
+```
+
+The files you start from are left as they are, for you to delete.
+
+### `project add`
+
+```bash
+storymaps project add --name "Roadmap"        # a new map, even offline
+storymaps project add storymap.yml            # a map from outside the project
+storymaps project add storymaps.io/abc123     # an existing map, by link or ID
+storymaps project add --project storymaps.io/p/k8f2m9xq   # with no project folder yet
+```
+
+Online, the map is created and added straight away. Offline, the CLI makes the map ID and the next `push` creates the map and adds it.
+
+### `project lock` / `project unlock`
+
+```bash
+storymaps project lock                 # the project, or the project and its maps: the same two choices as the app
+storymaps project lock --maps          # include the maps that aren't locked yet, without asking
+storymaps project unlock               # on this computer
+storymaps project unlock --maps        # and the maps that use the project password
+storymaps project unlock --remove      # for everyone
+```
+
+A map with its own password keeps it. Renaming a project, and reordering, removing and deleting its maps, stay in the app.
+
+### Questions, scripts and agents
+
+The CLI only asks a question in a terminal. `-y, --yes` takes the default answers, and `--force` answers the questions that guard against overwriting or removing something. With no terminal and no flag, a question about how much to do takes its default and says so, and a guard stops and names the flag.
+
+Passwords are never flags. They're typed, remembered on this computer after `storymaps unlock` or `storymaps project unlock --maps`, or taken from the `STORYMAPS_PASSWORD` environment variable, for scripts and CI:
+
+```bash
+STORYMAPS_PASSWORD="$RELEASE_PASSWORD" storymaps project lock --maps
+```
+
 ## Status
 
 See the project status in a snapshot: 
@@ -225,7 +301,7 @@ storymaps validate storymap.yml       # check YAML structure
 
 A target can be a map ID, `domain/id`, or a full URL, including a map inside a project link (`storymaps.io/p/<project>/<map>`).
 
-`pull`, `push`, `open`, `lock`, `unlock`, `status`, `log`, `backup`, `backups` and `restore` take `-f, --file <path>` to use a file other than `storymap.yml`.
+`pull`, `push`, `open`, `lock`, `unlock`, `status`, `log`, `backup`, `backups` and `restore` take `-f, --file <path>` to use a file other than `storymap.yml`. In a project folder, `pull`, `push`, `status`, `diff`, `open`, `backup` and `backups` work on every map without `-f`, and take `--dir <folder>` for a project folder other than `storymaps`. `validate storymaps` checks every map file in the folder, and `restore` finds which map a backup ID belongs to.
 
 ### `convert`
 
