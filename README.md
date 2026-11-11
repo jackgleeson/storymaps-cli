@@ -48,6 +48,15 @@ npx storymaps pull --force storymaps.io/abc123 && claude "The storymap file @sto
 
 From there you steer the agent a slice or a feature at a time ("now build search from the V1 slice"). When a feature has been through QA, set its cards to `status: done` in `storymap.yml` and `storymaps push`, so the map shows the progress to everyone else. Pull again before the next round to pick up changes made in the browser.
 
+For a [project](#projects) of several maps, pull the whole project, so the agent gets every map as one specification in `storymaps/`:
+
+```bash
+storymaps pull storymaps.io/p/k8f2m9xq        # every map, into storymaps/
+storymaps project unlock --maps               # if it's locked: once, in your terminal
+```
+
+Unlocking once remembers the password on this computer, so the agent can push without ever seeing it. Agents should pass `--yes` to take default answers, as some agent tools run commands in a terminal where a question would wait. In CI, give the password with `STORYMAPS_PASSWORD` instead.
+
 ## Quick Start
 
 ```bash
@@ -173,6 +182,24 @@ Blocked
 ```
 
 Non-task cards (notes, questions) are excluded from counts based on the legend.
+
+In a project folder, `status` shows one line per map, in tab order, with its file and its lock, and a total:
+
+```bash
+> storymaps status
+
+Coffee shop
+https://storymaps.io/p/k8f2m9xq
+project locked
+
+  Ordering   rq4m8z2c.yml  ████████████████░░░░ 12/15 (80%)  locked
+  Loyalty    bt7k1w9e.yml  ██████░░░░░░░░░░░░░░  4/13 (31%)  locked
+  Barista    hx2p6n0d.yml  ░░░░░░░░░░░░░░░░░░░░  0/9  (0%)   own lock
+
+  Total                    ███████░░░░░░░░░░░░░ 16/37 stories (43%)
+```
+
+`locked` is a map locked with the project password, and `own lock` a map with its own password.
 
 ## Commands
 
