@@ -32,6 +32,11 @@ describe('header keys in a map file', () => {
         assert.equal(siteOfBaseUrl('https://storymaps.io'), 'storymaps.io');
         assert.equal(siteOfBaseUrl('http://localhost:3000'), 'localhost:3000');
         assert.equal(siteOfBaseUrl('http://localhost:3312'), 'localhost:3312');
+        // Where the short form would read back as another address, the site is written in full
+        assert.equal(siteOfBaseUrl('http://localhost'), 'http://localhost:80');
+        assert.equal(siteOfBaseUrl('https://localhost:8443'), 'https://localhost:8443');
+        assert.equal(siteOfBaseUrl('http://maps.internal:8080'), 'http://maps.internal:8080');
+        assert.equal(siteOfBaseUrl('https://maps.example.com:8443'), 'maps.example.com:8443');
     });
 });
 

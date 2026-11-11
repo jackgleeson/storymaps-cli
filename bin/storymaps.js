@@ -36,7 +36,7 @@ const DIR_HELP = 'the project folder (default: storymaps)';
 program
     .command('init')
     .description('Create a new storymap.yml in the current directory')
-    .option('-s, --site <site>', 'target site (e.g. localhost, storymaps.io)')
+    .option('-s, --site <site>', 'target site (e.g. storymaps.io, localhost:3000 or http://192.168.0.20:8080)')
     .action(initCommand);
 
 program
@@ -158,7 +158,7 @@ project
     .argument('[files...]', 'map files to start the project from; they are left as they are')
     .option('--name <name>', 'the project name (default: Untitled project)')
     .option('--dir <folder>', DIR_HELP)
-    .option('-s, --site <site>', 'target site (e.g. localhost, storymaps.io)')
+    .option('-s, --site <site>', 'target site (e.g. storymaps.io, localhost:3000 or http://192.168.0.20:8080)')
     .action(projectInitCommand);
 
 project

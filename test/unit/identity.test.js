@@ -3,7 +3,8 @@ import { strict as assert } from 'node:assert';
 import { mkdtempSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { resolveTarget, parseProjectLink } from '../../lib/util/identity.js';
+import { resolveTarget, parseProjectLink, siteToBaseUrl } from '../../lib/util/identity.js';
+import { siteOfBaseUrl } from '../../lib/util/project.js';
 
 let dir;
 before(() => { dir = mkdtempSync(join(tmpdir(), 'storymaps-cli-')); });
@@ -57,6 +58,11 @@ describe('resolveTarget', () => {
     // No port is assumed for a file that names none
     const old = file('old.yml', 'name: x\nid: abc12345\nsite: localhost\n');
     await assert.rejects(resolveTarget(undefined, old), /localhost needs its port/);
+    // A site written out in full is used as it is
+    const full = file('full.yml', 'name: x\nid: abc12345\nsite: http://localhost:80\n');
+    assert.deepEqual(await resolveTarget(undefined, full), { id: 'abc12345', baseUrl: 'http://localhost' });
+    const port80 = await resolveTarget('http://localhost/abc12345', missing());
+    assert.deepEqual(port80, { id: 'abc12345', baseUrl: 'http://localhost' });
   });
 
   test('with no argument and no ID in the file, it says so', async () => {
@@ -66,5 +72,22 @@ describe('resolveTarget', () => {
 
   test('a URL without an ID is rejected', async () => {
     await assert.rejects(resolveTarget('https://storymaps.io/', missing()), /Could not extract map ID/);
+  });
+});
+
+describe('sites', () => {
+  test('-s takes a site or a whole address, and names no port it doesn\'t mean', () => {
+    assert.equal(siteToBaseUrl('http://localhost'), 'http://localhost');
+    assert.equal(siteToBaseUrl('localhost:3000'), 'http://localhost:3000');
+    assert.equal(siteToBaseUrl('https://localhost:8443'), 'https://localhost:8443');
+    assert.equal(siteToBaseUrl('maps.example.com'), 'https://maps.example.com');
+    assert.throws(() => siteToBaseUrl('localhost'), /needs its port/);
+  });
+
+  test('every server address reads back the same from the site written in a file', () => {
+    for (const address of ['https://storymaps.io', 'https://maps.example.com:8443', 'http://localhost', 'http://localhost:3000',
+      'https://localhost:8443', 'http://127.0.0.1:8080', 'http://maps.internal:8080']) {
+      assert.equal(siteToBaseUrl(siteOfBaseUrl(address)), address, address);
+    }
   });
 });
