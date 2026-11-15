@@ -7,7 +7,7 @@ import { join } from 'node:path';
 // The cache lives in ~/.storymaps, so point HOME at a temporary folder before loading the module
 const home = mkdtempSync(join(tmpdir(), 'storymaps-cli-home-'));
 process.env.HOME = home;
-const { detectFormat, readCache, writeCache, readEtag, writeEtag, readStorymap, writeStorymap } = await import('../../lib/util/file.js');
+const { detectFormat, readCache, writeCache, readEtag, writeEtag, readStorymap, writeStorymap, commentWarnings } = await import('../../lib/util/file.js');
 after(() => rmSync(home, { recursive: true, force: true }));
 
 describe('the ETag each file was pulled or pushed at', () => {
@@ -71,6 +71,19 @@ describe('reading and writing maps', () => {
     writeFileSync(json, '{"name":"From JSON"}');
     assert.equal((await readStorymap(yaml)).name, 'From YAML');
     assert.equal((await readStorymap(json)).name, 'From JSON');
+  });
+
+  test('a title typed without quotes keeps its #', async () => {
+    const yaml = join(home, 'hash.yml');
+    writeFileSync(yaml, 'name: Price history (Gitea #12)\nsteps:\n  - A\n');
+    assert.equal((await readStorymap(yaml)).name, 'Price history (Gitea #12)');
+  });
+
+  test('a # that YAML reads as a comment is reported with its line and how to keep it', () => {
+    assert.deepEqual(commentWarnings('name: Coffee App\nsteps:\n  - Pay # moved here\n'), [
+      'line 3: "# moved here" is read as a comment and left out. To keep it, put the value in quotes.',
+    ]);
+    assert.deepEqual(commentWarnings('name: Fix #12\n# a note to self\nsteps:\n  - Pay\n'), []);
   });
 
   test('writes map JSON as YAML, and text as it is', async () => {

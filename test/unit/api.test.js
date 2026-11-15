@@ -48,6 +48,13 @@ describe('requests', () => {
     assert.equal(req.body, 'name: x\n');
   });
 
+  test('a YAML map is sent with a # in a title kept, and JSON is sent as it is', async () => {
+    await api.putMap(BASE, 'abc12345', 'name: Fix #12\n');
+    await api.postMap(BASE, 'name: Fix #12\n');
+    await api.putMap(BASE, 'abc12345', '{"name":"Fix #12"}', { contentType: 'application/json' });
+    assert.deepEqual(requests.map(r => r.body), ['name: "Fix #12"\n', 'name: "Fix #12"\n', '{"name":"Fix #12"}']);
+  });
+
   test('putMap marks a restore, so the server logs it as one', async () => {
     await api.putMap(BASE, 'abc12345', '{}', { contentType: 'application/json', restoredBackup: '0123456789ab' });
     assert.equal(requests[0].headers['X-Restored-Backup'], '0123456789ab');

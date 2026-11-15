@@ -1,7 +1,7 @@
 import { describe, test } from 'node:test';
 import { strict as assert } from 'node:assert';
 import jsyaml from 'js-yaml';
-import { exportToYaml, importFromYaml, validateYaml, yamlObjToJson } from '../../lib/core/yaml.js';
+import { exportToYaml, importFromYaml, validateYaml, yamlObjToJson, keepHashes, loadYaml } from '../../lib/core/yaml.js';
 
 const MAP = `name: Coffee app
 users:
@@ -127,5 +127,32 @@ describe('validateYaml', () => {
 
   test('importFromYaml throws with the validation errors attached', () => {
     assert.throws(() => importFromYaml('name: x\nsteps: []\n'), (err) => err.validationErrors?.length === 1);
+  });
+});
+
+describe('a # typed without quotes', () => {
+  test('a ticket number in a title is kept, where YAML alone would drop it as a comment', () => {
+    assert.equal(jsyaml.load('name: Price history (Gitea #12)').name, 'Price history (Gitea');
+    assert.equal(loadYaml('name: Price history (Gitea #12)').name, 'Price history (Gitea #12)');
+    const map = importFromYaml('steps:\n  - Pay #2\nslices:\n  - name: MVP\n    goal: Ship #12 first\n    stories:\n      Pay #2:\n        - name: Price history (Gitea #12)\n          color: #fca5a5\n          tags:\n            - #urgent');
+    assert.equal(map.steps[0].name, 'Pay #2');
+    assert.equal(map.slices[0].goal, 'Ship #12 first');
+    assert.deepEqual(map.slices[0].stories[0], [{ name: 'Price history (Gitea #12)', color: '#fca5a5', tags: ['#urgent'] }]);
+  });
+
+  test('a # followed by a space stays a comment, and is reported with its line', () => {
+    const { text, warnings } = keepHashes('name: Coffee App\nsteps:\n  - Pay # moved here');
+    assert.deepEqual(jsyaml.load(text), { name: 'Coffee App', steps: ['Pay'] });
+    assert.deepEqual(warnings, [{ line: 3, text: '# moved here' }]);
+  });
+
+  test('quoted values, bodies written over several lines and links are left as written', () => {
+    const yaml = 'name: "Quoted (Gitea #13)"\nsteps:\n  - name: Pay\n    url: https://example.com/page#section\nslices:\n  - name: MVP\n    stories:\n      Pay:\n        - name: Card\n          body: >-\n            See #44, and name: Not a field #55\n          tags: [a, #b]\nnotes: |-\n  name: still the notes #2';
+    assert.deepEqual(keepHashes(yaml), { text: yaml, warnings: [] });
+  });
+
+  test('a map the CLI wrote reads the same with or without the check', () => {
+    const yaml = exportToYaml(importFromYaml(MAP));
+    assert.deepEqual(keepHashes(yaml), { text: yaml, warnings: [] });
   });
 });
